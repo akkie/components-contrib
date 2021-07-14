@@ -1,5 +1,3 @@
-// +build e2etests
-
 // ------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -54,7 +52,7 @@ func TestActivateJobs(t *testing.T) {
 		err = json.Unmarshal(res.Data, jobs)
 		assert.NoError(t, err)
 		// There is currently an issue which prevents the command to return the jobs: https://github.com/camunda-cloud/zeebe/issues/5925
-		// assert.Equal(t, 1, len(*jobs))
+		assert.Equal(t, 1, len(*jobs))
 		assert.Nil(t, res.Metadata)
 	})
 }
