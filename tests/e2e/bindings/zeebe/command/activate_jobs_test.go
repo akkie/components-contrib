@@ -10,6 +10,7 @@ package command
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/camunda-cloud/zeebe/clients/go/pkg/entities"
 	"github.com/dapr/components-contrib/bindings"
@@ -45,6 +46,13 @@ func TestActivateJobs(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
+		_, err = zeebe.CreateProcessInstance(cmd, map[string]interface{}{
+			"bpmnProcessId": id,
+			"version":       1,
+		})
+		assert.NoError(t, err)
+		time.Sleep(5 * time.Second)
+
 		req := &bindings.InvokeRequest{Data: data, Operation: command.ActivateJobsOperation}
 		res, err := cmd.Invoke(req)
 		assert.NoError(t, err)
@@ -53,7 +61,6 @@ func TestActivateJobs(t *testing.T) {
 		jobs := &[]entities.Job{}
 		err = json.Unmarshal(res.Data, jobs)
 		assert.NoError(t, err)
-		// There is currently an issue which prevents the command to return the jobs: https://github.com/camunda-cloud/zeebe/issues/5925
 		assert.Equal(t, 1, len(*jobs))
 		assert.Nil(t, res.Metadata)
 	})
